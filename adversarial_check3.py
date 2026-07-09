@@ -4,7 +4,7 @@ Exit criterion: FINDINGS must print 'none'."""
 import json, subprocess, statistics as st
 from clre import Costs, simulate_lp
 
-txt = subprocess.run(["pdftotext", "final/CLRE_v3_Rebalancing_Study_v3_Marco_Amendola.pdf", "-"],
+txt = subprocess.run(["pdftotext", "final/CLRE_v3.1_Rebalancing_Study_Marco_Amendola.pdf", "-"],
                      capture_output=True, text=True).stdout
 r2 = json.load(open("runs/run002.json")); r3 = json.load(open("runs/run003.json"))
 r4 = json.load(open("runs/run004.json")); fee = json.load(open("runs/fee_apr_measured.json"))

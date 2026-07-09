@@ -237,3 +237,37 @@ costs remain noise (3–4%) against crystallised drift everywhere tested.
 Break-even convention now stated explicitly: APR on deposited capital over
 the full window; time-in-range dilution applies symmetrically to required
 and realized accrual; in-range equivalents reported for static ranges.
+
+## Run 004b — discriminating mechanism test (independent-review repair)
+
+**Origin.** Independent review of the v3 draft (separate session, same engine,
+full reproduction of Run 003 passed 6/6) flagged the headline mechanism label
+— "structurally short mean-reversion at trigger scale" — as falsified by
+Run 004's own GBM control: OU 116.5% vs GBM 115.9% median BE, identical
+damage with zero mean reversion present. Run 004's pre-registration (S1–S4)
+never contained the discriminating prediction, so the test as designed could
+not falsify the label. The reviewer's log HAD pre-registered it (its P5:
+threshold worse on OU than GBM; retraction rule attached) and it MISSED on
+independent synthetics.
+
+**Design.** Paired, seed 42, Run 004 parameters exactly (OU stationary sd 7%,
+half-life 9.2d, σ 52%; zero-drift GBM same σ; 200 paths each). Plus σ-sweep
+40/52/63/80% ann., 100 paths per point per process.
+
+**Result.** Threshold ±5% median BE: OU 115.8% vs GBM 119.0% (delta −3.2pp);
+OU worse in only 43% of paired paths. σ-sweep medians: 71%→219% (OU) vs
+78%→219% (GBM) — damage tracks realized variance near-identically on both
+processes; delta oscillates around zero with no systematic sign.
+
+**Belief update (supersedes the v2/v3-draft mechanism label).** The
+"short mean-reversion" label is RETRACTED. Correct mechanism: exit-triggered
+re-centering holds the position permanently at maximum curvature (always
+centred, always 50/50), so it pays the concentrated-liquidity analogue of
+LVR continuously at a rate set by realized variance at trigger scale — a
+discrete LVR maximiser (Milionis et al. 2022), invariant to path structure.
+This unifies all evidence: A (σ55%) 111.6% ≈ B′ (σ56%) 108.0% despite
+opposite regimes; the reviewer's independent higher-σ oscillatory window
+(2025-07-27→10-24, σ63%) at 175% matches the σ63 synthetic median (159.5%)
+within path noise. The regime-dependent object remains the static tight
+range. Findings direction unchanged; mechanism label corrected; evidential
+strength increased.

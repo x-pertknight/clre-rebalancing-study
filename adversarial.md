@@ -28,3 +28,6 @@ Carried finding closed: v1/v2 #7 (single path per regime, no interval
 estimates) — CLOSED by Run 004 (400 synthetic paths, 5–95 pct intervals) and
 by the disjoint-window repair (Run 003). Remaining open production items are
 in the limitations table of the artifact itself.
+| 12 | Mechanism label "short mean-reversion" falsified by own GBM control (116.5% vs 115.9%); Run 004 pre-reg lacked the discriminating prediction | fatal | Run 004b (paired delta + σ-sweep); label retracted → "short realized variance / discrete LVR maximiser"; framing, caption, finding, log rewritten | fixed v3.1 (independent review pass, separate session) |
+| 13 | "Windows sit inside synthetic bands" true only at matched σ | cosmetic | σ-matched clause added | fixed v3.1 |
+| 14 | v3.1 assembly defects: README regressed to pre-v3 engine version; repaired PDF shipped outside final/; builder and check script still targeting v3 filename; duplicate finding numbers (8,9 reused) | repairable | packaging pass: README restored+repaired, artifact placed in final/, filenames aligned, findings renumbered 12/13 | fixed v3.1 (packaging pass) |

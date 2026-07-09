@@ -9,7 +9,7 @@ from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer, Table,
                                 TableStyle, PageBreak, HRFlowable, Image,
                                 KeepTogether)
 
-OUT = "final/CLRE_v3_Rebalancing_Study_v3_Marco_Amendola.pdf"
+OUT = "final/CLRE_v3.1_Rebalancing_Study_Marco_Amendola.pdf"
 INK = colors.HexColor("#1a1a1a"); ACC = colors.HexColor("#0e3a5a")
 GRY = colors.HexColor("#5a5a5a"); LIN = colors.HexColor("#c9c9c9"); BG = colors.HexColor("#eef2f5")
 ss = getSampleStyleSheet()
@@ -33,11 +33,11 @@ def tbl(data, w):
 
 def footer(cv, doc):
     cv.saveState(); cv.setFont("Helvetica", 7.5); cv.setFillColor(GRY)
-    cv.drawString(18 * mm, 12 * mm, "Marco Amendola · Concentrated-Liquidity Rebalancing Study v3 · July 2026")
+    cv.drawString(18 * mm, 12 * mm, "Marco Amendola · Concentrated-Liquidity Rebalancing Study v3.1 · July 2026")
     cv.drawRightString(192 * mm, 12 * mm, f"Page {doc.page}"); cv.restoreState()
 
 doc = SimpleDocTemplate(OUT, pagesize=A4, leftMargin=18 * mm, rightMargin=18 * mm, topMargin=16 * mm, bottomMargin=20 * mm,
-    title="Rebalancing a Concentrated-Liquidity Position: Policy, Costs, Evidence (v3)", author="Marco Amendola")
+    title="Rebalancing a Concentrated-Liquidity Position: Policy, Costs, Evidence (v3.1)", author="Marco Amendola")
 E = []
 E.append(Paragraph("Rebalancing a Concentrated-Liquidity Position:<br/>Policy, Costs, Evidence", S["title"]))
 E.append(Paragraph("Marco Amendola · July 2026 · Two <b>disjoint</b> 90-day regimes of real ETH-USD hourly data · 400 synthetic paths (OU / GBM) · USD- and ETH-denominated baselines · Measured pool fee anchor · Code, validation suite and research log ship with this document", S["sub"]))
@@ -80,7 +80,7 @@ E.append(Paragraph("Threshold \u00b15% re-center events over both windows. Upwar
 
 E.append(PageBreak())
 E.append(Paragraph("Synthetic mechanism test \u2014 OU vs GBM (Run 004, pre-registered)", S["h1"]))
-E.append(Paragraph("If exit-triggered re-centering at widths inside the oscillation amplitude is structurally short mean-reversion, it must lose on paths of <b>pure</b> mean reversion \u2014 the regime such a policy would most plausibly be defended for \u2014 with no trend to blame. 200 Ornstein\u2013Uhlenbeck paths (log-price, stationary sd 7%, half-life 9.2d, \u03c3 52% ann.) and 200 zero-drift GBM paths (same \u03c3), 2,160 hourly steps each, seed 42, identical costs. These are the study\u2019s first interval estimates.", S["b"]))
+E.append(Paragraph("Two competing mechanism labels fit the real-window evidence: the policy is short <i>mean reversion</i> at its trigger scale (v2\u2019s reading), or short <i>realized variance</i> regardless of path structure. The discriminating test: run it on pure mean-reverting paths AND on zero-drift diffusion of identical volatility \u2014 if the first label is right, it must lose systematically more where reversion exists. 200 Ornstein\u2013Uhlenbeck paths (log-price, stationary sd 7%, half-life 9.2d, \u03c3 52% ann.) and 200 zero-drift GBM paths (same \u03c3), 2,160 hourly steps each, seed 42, identical costs. These are the study\u2019s first interval estimates.", S["b"]))
 E.append(tbl([
  ["Process", "Policy", "Break-even APR, median", "5\u201395th percentile", "Rebalances (median)"],
  ["OU \u2014 pure mean reversion", "Full range", "0.1%", "[0.0%, 1.0%]", "0"],
@@ -91,10 +91,10 @@ E.append(tbl([
  ["", "Threshold \u00b15%", "115.9%", "[86.0%, 161.4%]", "24"],
 ], [42 * mm, 28 * mm, 38 * mm, 36 * mm, 28 * mm]))
 E.append(Spacer(1, 3))
-E.append(Paragraph("Threshold \u00b15% loses to static \u00b15% in 200 of 200 OU paths (paired). Its 5th-percentile break-even on pure mean reversion is 89.7% \u2014 the policy\u2019s best decile on its friendliest process is still unpayable. Both real windows (111.6%, 108.0%) sit inside the synthetic 5\u201395 bands. The regime-dependent object is the static tight range: median 4.1% on OU vs 29.3% on GBM.", S["sm"]))
+E.append(Paragraph("Threshold \u00b15% loses to static \u00b15% in 200 of 200 OU paths (paired); its 5th-percentile break-even on its friendliest process is 89.7% \u2014 still unpayable. The discriminating comparison (Run 004b, paired, same seed): OU median 115.8% vs GBM 119.0%, OU worse in only 43% of paired paths \u2014 <b>no</b> systematic mean-reversion penalty. A \u03c3-sweep (40\u201380% ann.) moves the median from 71% to 219% near-identically on both processes. Damage tracks realized variance, not path structure. Both real windows (111.6% at \u03c3 55%, 108.0% at \u03c3 56%) sit inside the \u03c3-matched synthetic 5\u201395 bands; higher-\u03c3 windows scale accordingly. The regime-dependent object is the static tight range: median 4.1% on OU vs 29.3% on GBM.", S["sm"]))
 
 E.append(Paragraph("The finding", S["h1"]))
-E.append(Paragraph("The v2 pre-registered hypothesis was that exit-triggered re-centering fails in trends and recovers in oscillation. The data rejected it, and v3 upgrades the rejection from observed to structural. Threshold \u00b15% is the worst policy in <b>both</b> disjoint real regimes (break-even 111.6% trending, 108.0% oscillatory; explicit costs 3\u20134% of the damage, crystallised inventory drift 96\u201397%) and in <b>400 of 400</b> synthetic paths including pure mean reversion. Mechanism: when the trigger width sits inside the oscillation amplitude, every exit-triggered re-center buys a local extreme, and the reversion then exits it on the other side \u2014 the policy is structurally short mean-reversion at its own trigger scale, independent of the macro regime. The regime-dependent object is the static tight range: its break-even collapses from 33.5% (trending) to 1.2% (disjoint oscillatory); the order-of-magnitude difference lives in the range decision, not the re-centering decision.", S["b"]))
+E.append(Paragraph("The v2 pre-registered hypothesis was that exit-triggered re-centering fails in trends and recovers in oscillation. The data rejected it, and v3 upgrades the rejection from observed to structural \u2014 while correcting v2\u2019s mechanism label, which the synthetic control falsified. Threshold \u00b15% is the worst policy in <b>both</b> disjoint real regimes (break-even 111.6% trending, 108.0% oscillatory; explicit costs 3\u20134% of the damage, crystallised inventory drift 96\u201397%) and in <b>400 of 400</b> synthetic paths \u2014 with statistically indistinguishable damage on pure mean reversion and on zero-drift diffusion. Mechanism: re-centering on every exit holds the position permanently at maximum curvature \u2014 always centred, always 50/50 \u2014 so it pays the concentrated-liquidity analogue of loss-versus-rebalancing continuously, at a rate set by realized variance at the trigger scale. The policy is <b>short realized variance</b>, a discrete LVR maximiser (Milionis et al., 2022), invariant to path structure and macro regime: near-identical \u03c3 explains why the two real windows price within 4pp of each other despite opposite regimes. The regime-dependent object is the static tight range: its break-even collapses from 33.5% (trending) to 1.2% (disjoint oscillatory); the order-of-magnitude difference lives in the range decision, not the re-centering decision.", S["b"]))
 
 E.append(Paragraph("Fee adequacy \u2014 measured anchor", S["h1"]))
 E.append(Paragraph("Pool-level fee APY (fees \u00f7 TVL) on the Uniswap v3 ETH/USDC 0.05% mainnet pool (0x88e6\u20265440), measured from the DeFiLlama daily series: <b>window A mean 14.9%</b> (median 12.0%, avg TVL $95M); <b>window B\u2032 mean 17.5%</b> (median 16.3%, avg TVL $151M). A Dune query computing the same metric from dex.trades and daily pool balances is published as query 7923963 (execution pending account credits \u2014 stated, not hidden). Against these measurements: threshold \u00b15% break-even requires sustained position-level capture of \u22486.2\u20137.5\u00d7 the pool average for 90 days. The uncrowded theoretical ceiling for a \u00b15% band is 41.5\u00d7 \u2014 but it assumes every competing dollar is full-range; on a major pool where liquidity is predominantly concentrated, realized multipliers compress toward \u22481\u00d7, and a sustained 6\u20137\u00d7 means near-zero competition at the tick for a quarter. Static \u00b15% on B\u2032 requires an in-range-equivalent 1.8% APR \u2248 0.10\u00d7 the measured pool average \u2014 adequacy fails only if pool fee yield collapses by more than \u224890% and stays there for the quarter. Positions whose adequacy depends on stress volume holding up are treated as marginal.", S["b"]))
