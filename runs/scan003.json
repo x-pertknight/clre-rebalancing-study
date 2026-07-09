@@ -1,0 +1,1 @@
+{"selected": {"start": "2024-08-06", "end": "2024-11-03", "pqs_daily": 0.0012044950345613224, "net": -0.0024162240306676575, "sigma_ann": 0.5975808341489561}, "criteria": "end<=2026-04-08, |net|<=5%, sigma in [40,70]%, min daily PQS, tiebreak |sig-55%| then recency", "n_candidates": 4}

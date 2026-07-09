@@ -1,0 +1,39 @@
+{
+ "source": "DeFiLlama yields API",
+ "pool_uuid": "665dc8bc-c79d-4800-97f7-304bf368e547",
+ "pool": "Uniswap v3 ETH/USDC 0.05% (0x88e6a0c2ddd26feeb64f039a2c41296fca3f5440)",
+ "metric": "apyBase = pool-level fee APY (fees/TVL), daily series",
+ "dune_query_pending_credits": 7923963,
+ "windows": [
+  {
+   "label": "A 2026 trending",
+   "start": "2026-04-09",
+   "end": "2026-07-08",
+   "n": 90,
+   "fee_apy_mean": 14.937779222222222,
+   "fee_apy_median": 11.97973,
+   "fee_apy_p95": 36.31427,
+   "avg_tvl_usd": 94738440.75555556
+  },
+  {
+   "label": "B' 2024 oscillatory",
+   "start": "2024-08-06",
+   "end": "2024-11-03",
+   "n": 89,
+   "fee_apy_mean": 17.53380786516854,
+   "fee_apy_median": 16.34183,
+   "fee_apy_p95": 30.0431,
+   "avg_tvl_usd": 151064949.94382024
+  },
+  {
+   "label": "B_v2 overlapping",
+   "start": "2026-03-02",
+   "end": "2026-05-31",
+   "n": 90,
+   "fee_apy_mean": 24.659235111111112,
+   "fee_apy_median": 16.77413,
+   "fee_apy_p95": 60.90574,
+   "avg_tvl_usd": 98920420.6111111
+  }
+ ]
+}

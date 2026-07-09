@@ -1,0 +1,124 @@
+"""Reproduction gate for Run 003 (protocol step: SMOKE/gate before new runs).
+
+Mode per window (amended gate, 2026-07-09):
+- Window A: EXACT mode — replay from runs/data_eth_usd_hourly.json (saved inputs).
+  Pass criterion: every published run002.json A number matches to rel tol 1e-9.
+- Window B: TOLERANCE mode — saved hourly inputs for B were not archived, so
+  prices are re-fetched from Coinbase. Pass criterion: BE APR within +/-1pp,
+  LVH within +/-0.3pp of run002.json B (candle revisions make exact spurious).
+"""
+import json, math, time, datetime as dt
+import requests
+from clre import (Costs, simulate_hodl, simulate_lp, evaluate,
+                  realised_vol, pqs, log_returns)
+
+PPY = 24 * 365
+V0 = 100_000.0
+
+
+def fetch_hourly(start_iso, end_iso):
+    start = dt.datetime.fromisoformat(start_iso).replace(tzinfo=dt.timezone.utc)
+    end = dt.datetime.fromisoformat(end_iso).replace(tzinfo=dt.timezone.utc)
+    out = {}
+    cur = start
+    while cur < end:
+        ce = min(cur + dt.timedelta(hours=300), end)
+        r = requests.get("https://api.exchange.coinbase.com/products/ETH-USD/candles",
+                         params={"granularity": 3600, "start": cur.isoformat(),
+                                 "end": ce.isoformat()}, timeout=15)
+        r.raise_for_status()
+        for ts, l, h, o, c, v in r.json():
+            out[int(ts)] = float(c)
+        cur = ce
+        time.sleep(0.12)
+    ks = sorted(out)
+    return ks, [out[k] for k in ks]
+
+
+def daily_from_hourly(ts, px):
+    days = {}
+    for t, p in zip(ts, px):
+        d = dt.datetime.fromtimestamp(t, dt.timezone.utc).date()
+        days[d] = p
+    ks = sorted(days)
+    return [days[k] for k in ks]
+
+
+def run_window(ts, px):
+    rets = log_returns(px)
+    vol = realised_vol(px, PPY)
+    daily = daily_from_hourly(ts, px)
+    costs = Costs()
+    hodl = simulate_hodl(px, V0)
+    pol = [
+        ("Full range",       simulate_lp(px, V0, 0.0,  costs, "full",      name="Full range"), None),
+        ("Static ±15%",      simulate_lp(px, V0, 0.15, costs, "static",    name="Static ±15%"), 0.15),
+        ("Static ±5%",       simulate_lp(px, V0, 0.05, costs, "static",    name="Static ±5%"), 0.05),
+        ("Threshold ±15%",   simulate_lp(px, V0, 0.15, costs, "threshold", name="Threshold ±15%"), 0.15),
+        ("Threshold ±5%",    simulate_lp(px, V0, 0.05, costs, "threshold", name="Threshold ±5%"), 0.05),
+        ("Periodic wk ±10%", simulate_lp(px, V0, 0.10, costs, "periodic",  period=24 * 7, name="Periodic wk ±10%"), 0.10),
+    ]
+    hT = hodl.values[-1]
+    p0, pT = px[0], px[-1]
+    rows = []
+    for name, res, w in pol:
+        e = evaluate(res, hodl, px, PPY, w, [0.15])
+        vT = e["final_value"]
+        eth_lvh = (vT / pT - V0 / p0) / (V0 / p0)
+        rows.append({"name": name, "vT": vT, "lvh_usd": e["lvh_pre_fee"],
+                     "lvh_eth": eth_lvh, "nreb": e["n_rebalances"],
+                     "cost": e["total_cost"], "tir": e["time_in_range"],
+                     "be": e["breakeven_fee_apr"]})
+    return {"n": len(px), "p0": p0, "pT": pT, "net": pT / p0 - 1,
+            "sigma_ann": vol["sigma_annual"], "pqs_hourly": pqs(rets),
+            "pqs_daily": pqs(log_returns(daily)), "hodl_T": hT, "rows": rows}
+
+
+def compare(label, got, ref, mode):
+    ok = True
+    if mode == "exact":
+        def chk(a, b):
+            return math.isclose(a, b, rel_tol=1e-9, abs_tol=1e-9)
+    print(f"\n=== GATE {label} [{mode}] ===")
+    for g, r in zip(got["rows"], ref["rows"]):
+        if mode == "exact":
+            fields = ["vT", "lvh_usd", "lvh_eth", "cost", "tir", "be"]
+            row_ok = all(chk(g[f], r[f]) for f in fields) and g["nreb"] == r["nreb"]
+            detail = ""
+        else:
+            d_be = abs(g["be"] - r["be"])
+            d_lvh = abs(g["lvh_usd"] - r["lvh_usd"])
+            row_ok = d_be <= 0.01 and d_lvh <= 0.003
+            detail = f"  dBE={d_be*100:.2f}pp dLVH={d_lvh*100:.2f}pp"
+        print(f"{'PASS' if row_ok else 'FAIL'}  {g['name']:<18} "
+              f"BE {g['be']*100:6.1f}% (ref {r['be']*100:6.1f}%)  "
+              f"LVH {g['lvh_usd']*100:7.2f}% (ref {r['lvh_usd']*100:7.2f}%)  "
+              f"reb {g['nreb']}/{r['nreb']}{detail}")
+        ok = ok and row_ok
+    print(f"GATE {label}: {'PASS' if ok else 'FAIL'}")
+    return ok
+
+
+if __name__ == "__main__":
+    ref = json.load(open("runs/run002.json"))
+
+    # --- Window A: exact, from saved inputs ---
+    d = json.load(open("runs/data_eth_usd_hourly.json"))
+    ts_a, px_a = d["ts"], d["close"]
+    t0 = dt.datetime.fromtimestamp(ts_a[0], dt.timezone.utc)
+    t1 = dt.datetime.fromtimestamp(ts_a[-1], dt.timezone.utc)
+    print(f"Saved A inputs: n={len(px_a)}  {t0.date()} -> {t1.date()}")
+    got_a = run_window(ts_a, px_a)
+    ok_a = compare("A (saved json)", got_a, ref["A"], "exact")
+
+    # --- Window B: tolerance, re-fetched ---
+    ts_b, px_b = fetch_hourly("2026-03-02T00:00:00", "2026-05-31T00:00:00")
+    print(f"\nRe-fetched B inputs: n={len(px_b)}")
+    got_b = run_window(ts_b, px_b)
+    ok_b = compare("B (re-fetch, tol BE±1pp LVH±0.3pp)", got_b, ref["B"], "tol")
+
+    json.dump({"A_saved": got_a, "B_refetch": got_b,
+               "gate": {"A": "exact:" + ("PASS" if ok_a else "FAIL"),
+                        "B": "tolerance:" + ("PASS" if ok_b else "FAIL")}},
+              open("runs/gate003.json", "w"))
+    print(f"\nOVERALL GATE: {'PASS' if ok_a and ok_b else 'FAIL'} — saved runs/gate003.json")
