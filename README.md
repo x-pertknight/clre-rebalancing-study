@@ -42,4 +42,16 @@ gate before any new run. Fee income inverted (break-even APR), not assumed;
 pool-level anchor measured (DeFiLlama series; Dune query 7923963 published).
 Known limitations and the production path per gap are stated inside the PDF.
 
+## What this means in practice
+
+The break-even numbers above are a bar. A pool clears it only if its sustained
+fee APR exceeds the break-even for your width and regime — and pools paying
+100%+ sustained are rare and usually paying you for a risk. Before enabling
+any auto-rebalancing policy on a position: (1) measure the pool's realised fee
+APR over a window at least as long as your expected holding period (anchor
+query: [Dune 7923963](https://dune.com/queries/7923963)), (2) compare it to
+the break-even for your width from this study, (3) if it doesn't clear, a
+static range — re-chosen only on regime change — dominated every re-centering
+policy tested here.
+
 *Marco Amendola · July 2026 · on-chain research under [Xpertknight](https://dune.com/xpertknight) · not investment advice*
