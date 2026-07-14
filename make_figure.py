@@ -9,39 +9,47 @@ import matplotlib.pyplot as plt
 RUNS_DIR = Path("runs")
 OUT_PATH = Path("assets/breakeven.png")
 
-FALLBACK = {
-    "Trending 90d window, threshold ±5%": (111.6, None, None),
-    "Disjoint oscillatory window, threshold ±5%": (108.0, None, None),
-    "OU synthetic median": (116.5, 89.7, 141.3),
-}
+
+def _row(rows, name):
+    return next(r for r in rows if r["name"] == name)
 
 
-def find_break_even_values():
-    """Search runs/*.json for any key containing 'break_even' (case-insensitive)."""
-    values = {}
-    for path in sorted(RUNS_DIR.glob("*.json")):
-        try:
-            data = json.loads(path.read_text())
-        except (json.JSONDecodeError, OSError):
-            continue
-        _collect(data, path.stem, values)
-    return values
+def _median(sorted_vals):
+    n = len(sorted_vals)
+    mid = n // 2
+    if n % 2 == 0:
+        return (sorted_vals[mid - 1] + sorted_vals[mid]) / 2
+    return sorted_vals[mid]
 
 
-def _collect(obj, source, values, prefix=""):
-    if isinstance(obj, dict):
-        for key, val in obj.items():
-            if "break_even" in key.lower() and isinstance(val, (int, float)):
-                values[f"{source}:{prefix}{key}"] = (val, None, None)
-            else:
-                _collect(val, source, values, prefix=f"{prefix}{key}.")
-    elif isinstance(obj, list):
-        for i, item in enumerate(obj):
-            _collect(item, source, values, prefix=f"{prefix}[{i}].")
+def _percentile_lower(sorted_vals, p):
+    idx = int((p / 100) * (len(sorted_vals) - 1))
+    return sorted_vals[idx]
+
+
+def load_values():
+    """Pull the three published break-even figures from the canonical runs/*.json."""
+    run002 = json.loads((RUNS_DIR / "run002.json").read_text())
+    trending_be = _row(run002["A"]["rows"], "Threshold ±5%")["be"] * 100
+
+    run003 = json.loads((RUNS_DIR / "run003.json").read_text())
+    oscillatory_be = _row(run003["rows"], "Threshold ±5%")["be"] * 100
+
+    run004 = json.loads((RUNS_DIR / "run004.json").read_text())
+    thr5 = sorted(run004["ou"]["thr5"])
+    ou_median = _median(thr5) * 100
+    ou_lo = _percentile_lower(thr5, 5) * 100
+    ou_hi = _percentile_lower(thr5, 95) * 100
+
+    return {
+        "Trending 90d window, threshold ±5%": (trending_be, None, None),
+        "Disjoint oscillatory window, threshold ±5%": (oscillatory_be, None, None),
+        "OU synthetic median": (ou_median, ou_lo, ou_hi),
+    }
 
 
 def main():
-    data = find_break_even_values() or FALLBACK
+    data = load_values()
 
     labels = list(data.keys())
     centers = [data[l][0] for l in labels]
