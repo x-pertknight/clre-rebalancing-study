@@ -13,32 +13,12 @@ Mode per window (amended gate, 2026-07-09; path/coverage fix follow-up):
   (Run 003, disjoint oscillatory window).
 All three windows run entirely offline — the gate makes no network calls.
 """
-import json, math, time, datetime as dt
-import requests
+import json, math, datetime as dt
 from clre import (Costs, simulate_hodl, simulate_lp, evaluate,
                   realised_vol, pqs, log_returns)
 
 PPY = 24 * 365
 V0 = 100_000.0
-
-
-def fetch_hourly(start_iso, end_iso):
-    start = dt.datetime.fromisoformat(start_iso).replace(tzinfo=dt.timezone.utc)
-    end = dt.datetime.fromisoformat(end_iso).replace(tzinfo=dt.timezone.utc)
-    out = {}
-    cur = start
-    while cur < end:
-        ce = min(cur + dt.timedelta(hours=300), end)
-        r = requests.get("https://api.exchange.coinbase.com/products/ETH-USD/candles",
-                         params={"granularity": 3600, "start": cur.isoformat(),
-                                 "end": ce.isoformat()}, timeout=15)
-        r.raise_for_status()
-        for ts, l, h, o, c, v in r.json():
-            out[int(ts)] = float(c)
-        cur = ce
-        time.sleep(0.12)
-    ks = sorted(out)
-    return ks, [out[k] for k in ks]
 
 
 def daily_from_hourly(ts, px):
