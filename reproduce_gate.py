@@ -1,11 +1,17 @@
-"""Reproduction gate for Run 003 (protocol step: SMOKE/gate before new runs).
+"""Reproduction gate for Run 002/003 (protocol step: SMOKE/gate before new runs).
 
-Mode per window (amended gate, 2026-07-09):
-- Window A: EXACT mode — replay from runs/data_eth_usd_hourly.json (saved inputs).
-  Pass criterion: every published run002.json A number matches to rel tol 1e-9.
-- Window B: TOLERANCE mode — saved hourly inputs for B were not archived, so
-  prices are re-fetched from Coinbase. Pass criterion: BE APR within +/-1pp,
-  LVH within +/-0.3pp of run002.json B (candle revisions make exact spurious).
+Mode per window (amended gate, 2026-07-09; path/coverage fix follow-up):
+- Window A: EXACT mode — replay from runs/data_A_hourly_20260409_20260708.json
+  (saved inputs). Pass criterion: every published run002.json A number matches
+  to rel tol 1e-9.
+- Window B: EXACT mode — replay from runs/data_B_hourly_20260302_20260531.json
+  (saved inputs). Pass criterion: every published run002.json B number matches
+  to rel tol 1e-9.
+- Window B': EXACT mode — replay from runs/data_Bprime_hourly_20240806_20241103.json
+  (saved inputs). Pass criterion: every published run003.json number matches
+  to rel tol 1e-9. run003.json is a separate reference source from run002.json
+  (Run 003, disjoint oscillatory window).
+All three windows run entirely offline — the gate makes no network calls.
 """
 import json, math, time, datetime as dt
 import requests
@@ -101,9 +107,10 @@ def compare(label, got, ref, mode):
 
 if __name__ == "__main__":
     ref = json.load(open("runs/run002.json"))
+    ref_bprime = json.load(open("runs/run003.json"))
 
     # --- Window A: exact, from saved inputs ---
-    d = json.load(open("runs/data_eth_usd_hourly.json"))
+    d = json.load(open("runs/data_A_hourly_20260409_20260708.json"))
     ts_a, px_a = d["ts"], d["close"]
     t0 = dt.datetime.fromtimestamp(ts_a[0], dt.timezone.utc)
     t1 = dt.datetime.fromtimestamp(ts_a[-1], dt.timezone.utc)
@@ -111,14 +118,27 @@ if __name__ == "__main__":
     got_a = run_window(ts_a, px_a)
     ok_a = compare("A (saved json)", got_a, ref["A"], "exact")
 
-    # --- Window B: tolerance, re-fetched ---
-    ts_b, px_b = fetch_hourly("2026-03-02T00:00:00", "2026-05-31T00:00:00")
-    print(f"\nRe-fetched B inputs: n={len(px_b)}")
+    # --- Window B: exact, from saved inputs ---
+    d = json.load(open("runs/data_B_hourly_20260302_20260531.json"))
+    ts_b, px_b = d["ts"], d["close"]
+    t0 = dt.datetime.fromtimestamp(ts_b[0], dt.timezone.utc)
+    t1 = dt.datetime.fromtimestamp(ts_b[-1], dt.timezone.utc)
+    print(f"\nSaved B inputs: n={len(px_b)}  {t0.date()} -> {t1.date()}")
     got_b = run_window(ts_b, px_b)
-    ok_b = compare("B (re-fetch, tol BE±1pp LVH±0.3pp)", got_b, ref["B"], "tol")
+    ok_b = compare("B (saved json)", got_b, ref["B"], "exact")
 
-    json.dump({"A_saved": got_a, "B_refetch": got_b,
+    # --- Window B': exact, from saved inputs, ref is run003.json (separate source) ---
+    d = json.load(open("runs/data_Bprime_hourly_20240806_20241103.json"))
+    ts_bp, px_bp = d["ts"], d["close"]
+    t0 = dt.datetime.fromtimestamp(ts_bp[0], dt.timezone.utc)
+    t1 = dt.datetime.fromtimestamp(ts_bp[-1], dt.timezone.utc)
+    print(f"\nSaved B' inputs: n={len(px_bp)}  {t0.date()} -> {t1.date()}")
+    got_bp = run_window(ts_bp, px_bp)
+    ok_bp = compare("B' (saved json, ref run003.json)", got_bp, ref_bprime, "exact")
+
+    json.dump({"A_saved": got_a, "B_saved": got_b, "Bprime_saved": got_bp,
                "gate": {"A": "exact:" + ("PASS" if ok_a else "FAIL"),
-                        "B": "tolerance:" + ("PASS" if ok_b else "FAIL")}},
+                        "B": "exact:" + ("PASS" if ok_b else "FAIL"),
+                        "Bprime": "exact:" + ("PASS" if ok_bp else "FAIL")}},
               open("runs/gate003.json", "w"))
-    print(f"\nOVERALL GATE: {'PASS' if ok_a and ok_b else 'FAIL'} — saved runs/gate003.json")
+    print(f"\nOVERALL GATE: {'PASS' if ok_a and ok_b and ok_bp else 'FAIL'} — saved runs/gate003.json")
