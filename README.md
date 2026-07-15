@@ -54,4 +54,6 @@ the break-even for your width from this study, (3) if it doesn't clear, a
 static range — re-chosen only on regime change — dominated every re-centering
 policy tested here.
 
+Live monitor: [CLRE Break-Even Monitor on Dune](https://dune.com/x1a0x1a0/clre-break-even-monitor) — which top pools currently clear the bar, refreshed weekly.
+
 *Marco Amendola · July 2026 · on-chain research under [Xpertknight](https://dune.com/xpertknight) · not investment advice*
