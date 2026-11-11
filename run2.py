@@ -80,5 +80,6 @@ for W in (A,B):
         cs = f"{r['cost_share']*100:.0f}%" if r['cost_share']==r['cost_share'] else "—"
         print(f"{r['name']:<20}{r['lvh_usd']*100:>8.2f}%{r['lvh_eth']*100:>8.2f}%{r['nreb']:>5}{r['cost']:>8.0f}{r['tir']*100:>5.0f}%{r['be']*100:>8.1f}%{cs:>9}")
 
-json.dump({"A":A,"B":B}, open("run002.json","w"), default=str)
+import os; os.makedirs("out", exist_ok=True)
+json.dump({"A":A,"B":B}, open("out/run002.json","w"), default=str)  # reference copy: runs/run002.json
 print("\nsaved run002.json")

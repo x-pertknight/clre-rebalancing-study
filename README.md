@@ -1,59 +1,53 @@
-# CLRE Concentrated-Liquidity Rebalancing Study (v3)
+# CLRE: rebalancing a concentrated liquidity position (v3)
 
-**TL;DR — should you auto-rebalance a tight Uniswap v3 position? Mostly no.**
+Should you auto-rebalance a tight Uniswap v3 position? Mostly no.
 
-- At ±5% width, exit-triggered re-centering needs a **111.6% fee APR just to break even** on a trending 90-day window (108.0% on a disjoint oscillatory one). Very few pools ever pay that.
-- Explicit costs (gas + swap fees) are only **3–4% of the damage**. The rest is the policy itself: re-centering at its own trigger scale is structurally **short realized variance** — a discrete LVR maximiser (Milionis et al. 2022), invariant to path structure. (v2's "short mean-reversion" label was falsified by the OU control and retracted; the log keeps the retraction.)
-- The thing that IS regime-dependent is the static tight range (33.5% trending → 1.2% oscillatory), **not** the re-centering decision.
+- At a width of ±5%, re-centering on exit needs a 111.6% fee APR just to break even on a trending 90-day window, and 108.0% on a separate oscillating one. Very few pools ever pay that.
+- Explicit costs (gas and swap fees) are only 3 to 4% of the damage. The rest is the policy itself. Re-centering at its own trigger scale is structurally short realized variance, a discrete LVR maximiser (Milionis et al. 2022), whatever the path structure. The v2 label "short mean reversion" was falsified by the OU control and retracted. The research log keeps the retraction.
+- What does depend on the regime is the static tight range (33.5% trending, 1.2% oscillating), not the re-centering decision.
 
 ![Break-even fee APR](assets/breakeven.png)
 
-**Question:** how should a Uniswap-v3-style LP position be rebalanced, and what does each policy actually cost?
+Question. How should a Uniswap v3 style LP position be rebalanced, and what does each policy actually cost?
 
-**Full result:** threshold ±5% loses on **200 of 200** pure mean-reverting (OU) synthetic paths, median break-even 116.5% [5–95pct: 89.7–141.3].
+Full result. A ±5% threshold policy loses on 200 of 200 pure mean-reverting (OU) synthetic paths, with a median break-even of 116.5% (5th to 95th percentile 89.7 to 141.3).
 
-**Read first:** `final/CLRE_v3.1_Rebalancing_Study_Marco_Amendola.pdf` (4 pages).
+Read first. `final/CLRE_v3.1_Rebalancing_Study_Marco_Amendola.pdf` (4 pages).
 
 ## Reproduce
+
 ```
-python3 tests.py              # 9/9 sanity suite — required before any run
-python3 reproduce_gate.py     # replays published numbers from archived inputs
-python3 adversarial_check3.py # every PDF number verified against runs/*.json
+python3 tests.py              # 9 of 9 sanity tests, required before any run
+python3 reproduce_gate.py     # replays the published numbers from archived inputs
+python3 adversarial_check3.py # checks every number in the PDF against runs/*.json (needs pdftotext)
 ```
-Archived hourly inputs for every window ship in `runs/` — the gate runs
-offline. Synthetic study: seed 42, parameters logged before the run.
+
+The archived hourly inputs for every window are in `runs/`, so the gate runs offline with the standard library. The synthetic study uses seed 42, with parameters logged before the run. The fetch scripts, the PDF build and the figure need the packages in requirements.txt.
 
 ## Structure
-- `clre.py` — engine: exact v3 position math, policies, costs, evaluation
-- `tests.py` — nine-test validation suite
-- `reproduce_gate.py`, `adversarial_check3.py` — gates
-- run2.py, scan_windows.py, build_pdf3.py — runs and artifact build (superseded scripts in archive/)
-- make_figure.py — README figure
-- `runs/` — archived inputs + full outputs (run002/003/004/004b, gate, scan, fee anchor)
-- `research_log.md`  pre-registered predictions (including the failed ones),
-  two v2 errata, belief updates. The credibility artifact.
-- `adversarial.md`  both adversarial passes, findings triaged, repairs
-- `brief.md`  origin and acceptance criteria
 
-## Method discipline
-Predictions pre-registered before every run (Run 002: 2/4 failed — the
-failures produced the main finding; Run 003: 5/5; Run 004: 4/4). Reproduction
-gate before any new run. Fee income inverted (break-even APR), not assumed;
-pool-level anchor measured (DeFiLlama series; Dune query 7923963 published).
-Known limitations and the production path per gap are stated inside the PDF.
+- `clre.py`. Engine: exact v3 position math, policies, costs, evaluation.
+- `tests.py`. Nine-test validation suite.
+- `reproduce_gate.py`, `adversarial_check3.py`. Gates.
+- `run2.py`, `scan_windows.py`, `build_pdf3.py`. Runs and PDF build. A rerun of `run2.py` writes to `out/` and never overwrites the reference runs. Superseded scripts and earlier PDF versions are in `archive/`.
+- `make_figure.py`. README figure.
+- `runs/`. Archived inputs and full outputs (run002, run003, run004, run004b, gate, scan, fee anchor).
+- `research_log.md`. Pre-registered predictions including the failed ones, two v2 errata, belief updates.
+- `adversarial.md`. Both adversarial passes, findings triaged, repairs.
+- `brief.md`. Origin and acceptance criteria.
+
+## Method
+
+Predictions were registered before every run. Run 002 failed 2 of 4, and the failures produced the main finding. Run 003 hit 5 of 5 and run 004 hit 4 of 4. The reproduction gate runs before any new run. Fee income is inverted into a break-even APR, not assumed. The pool-level anchor is measured from the DeFiLlama series and published as Dune query 7923963. Known limitations, and how each gap would be closed in production, are stated in the PDF.
 
 ## What this means in practice
 
-The break-even numbers above are a bar. A pool clears it only if its sustained
-fee APR exceeds the break-even for your width and regime — and pools paying
-100%+ sustained are rare and usually paying you for a risk. Before enabling
-any auto-rebalancing policy on a position: (1) measure the pool's realised fee
-APR over a window at least as long as your expected holding period (anchor
-query: [Dune 7923963](https://dune.com/queries/7923963)), (2) compare it to
-the break-even for your width from this study, (3) if it doesn't clear, a
-static range — re-chosen only on regime change — dominated every re-centering
-policy tested here.
+The break-even numbers are a bar. A pool clears it only if its sustained fee APR exceeds the break-even for your width and regime, and pools paying 100% or more over time are rare and usually paying you for a risk. Before turning on any auto-rebalancing policy:
 
-Live monitor: [CLRE Break-Even Monitor on Dune](https://dune.com/x1a0x1a0/clre-break-even-monitor) — which top pools currently clear the bar, refreshed weekly.
+1. Measure the pool's realised fee APR over a window at least as long as your expected holding period (anchor query: [Dune 7923963](https://dune.com/queries/7923963)).
+2. Compare it to the break-even for your width from this study.
+3. If it does not clear, a static range, re-chosen only when the regime changes, beat every re-centering policy tested here.
 
-*Marco Amendola · July 2026 · on-chain research under [Xpertknight](https://dune.com/xpertknight) · not investment advice*
+Live monitor: [CLRE Break-Even Monitor on Dune](https://dune.com/x1a0x1a0/clre-break-even-monitor), which shows the top pools that currently clear the bar, refreshed weekly.
+
+Marco Amendola, July 2026. On-chain research under [Xpertknight](https://dune.com/xpertknight). Not investment advice.
