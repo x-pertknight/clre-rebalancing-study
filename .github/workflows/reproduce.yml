@@ -15,7 +15,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Check pdftotext is available
-        run: pdftotext -v
+      # pdftotext (poppler) is not on the runner image. This package install is the
+      # only network step; reproduce.sh itself runs offline.
+      - name: Install pdftotext
+        run: sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends poppler-utils
       - name: Reproduce offline
         run: bash reproduce.sh
