@@ -1,4 +1,4 @@
-"""CLRE study PDF v2 — two regimes, dual denomination, post-adversarial."""
+"""CLRE study PDF v2: two regimes, dual denomination."""
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.lib import colors

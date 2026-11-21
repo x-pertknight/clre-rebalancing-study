@@ -1,5 +1,5 @@
-"""CLRE study PDF v3 — disjoint regimes, synthetic mechanism test,
-measured fee anchor, stated break-even convention, figure, post-adversarial."""
+"""CLRE study PDF v3: disjoint regimes, synthetic mechanism test,
+measured fee anchor, stated break-even convention, figure."""
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.lib import colors

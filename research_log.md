@@ -113,7 +113,7 @@ inside the oscillation amplitude; hold static-tight in measured oscillatory
 regimes, widen or exit in trending ones; re-center only on regime change, not
 on range exit. The assumed-APR scenario table from Run 001 is RETIRED — its
 uncrowded-efficiency model produced a table that contradicted the text
-(caught in adversarial review); break-even inversion is the sole primary lens.
+(caught in review); break-even inversion is the sole primary lens.
 
 ## v2 ERRATUM — window overlap (logged 2026-07-09, pre-Run-003)
 

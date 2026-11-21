@@ -1,4 +1,4 @@
-"""Mechanical adversarial check for the v3 artifact: verifies every
+"""Mechanical number check for the v3 artifact: verifies every
 load-bearing number in the PDF against runs/*.json. Run after any rebuild.
 Exit criterion: FINDINGS must print 'none'."""
 import json, subprocess, statistics as st
