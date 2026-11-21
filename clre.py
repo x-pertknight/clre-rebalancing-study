@@ -5,7 +5,7 @@ Simulates Uniswap-v3-style concentrated LP positions over a real historical
 price path, under competing rebalancing policies, with explicit costs, and
 evaluates outcomes against an honestly-costed HODL baseline.
 
-Design principles (research-discipline):
+Design principles:
 - Exact v3 position math; no linearized IL approximations.
 - The unknown (fee income) is INVERTED: primary output is the fee yield each
   policy would have REQUIRED to break even vs HODL, which needs no volume

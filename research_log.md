@@ -240,7 +240,7 @@ and realized accrual; in-range equivalents reported for static ranges.
 
 ## Run 004b — discriminating mechanism test (independent-review repair)
 
-**Origin.** Independent review of the v3 draft (separate session, same engine,
+**Origin.** Independent review of the v3 draft (same engine,
 full reproduction of Run 003 passed 6/6) flagged the headline mechanism label
 — "structurally short mean-reversion at trigger scale" — as falsified by
 Run 004's own GBM control: OU 116.5% vs GBM 115.9% median BE, identical

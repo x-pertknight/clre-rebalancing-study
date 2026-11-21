@@ -1,4 +1,4 @@
-"""Build the CLRE submission PDF (reportlab platypus)."""
+"""Build the CLRE study PDF (reportlab platypus)."""
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.lib import colors
