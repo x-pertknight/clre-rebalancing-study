@@ -13,7 +13,7 @@ Mode per window (amended gate, 2026-07-09; path/coverage fix follow-up):
   (Run 003, disjoint oscillatory window).
 All three windows run entirely offline — the gate makes no network calls.
 """
-import json, math, datetime as dt
+import json, math, sys, datetime as dt
 from clre import (Costs, simulate_hodl, simulate_lp, evaluate,
                   realised_vol, pqs, log_returns)
 
@@ -122,3 +122,4 @@ if __name__ == "__main__":
                         "Bprime": "exact:" + ("PASS" if ok_bp else "FAIL")}},
               open("runs/gate003.json", "w"))
     print(f"\nOVERALL GATE: {'PASS' if ok_a and ok_b and ok_bp else 'FAIL'} — saved runs/gate003.json")
+    sys.exit(0 if ok_a and ok_b and ok_bp else 1)  # non zero exit on any mismatch

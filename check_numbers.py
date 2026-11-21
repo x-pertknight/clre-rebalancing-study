@@ -1,7 +1,7 @@
 """Mechanical number check for the v3 artifact: verifies every
 load-bearing number in the PDF against runs/*.json. Run after any rebuild.
 Exit criterion: FINDINGS must print 'none'."""
-import json, subprocess, statistics as st
+import json, subprocess, statistics as st, sys
 from clre import Costs, simulate_lp
 
 txt = subprocess.run(["pdftotext", "final/CLRE_v3.1_Rebalancing_Study_Marco_Amendola.pdf", "-"],
@@ -32,3 +32,4 @@ eqB5 = [r for r in r3["rows"] if r["name"] == "Static ±5%"][0]
 req = (eqB5["be"] / eqB5["tir"]) / (wB["fee_apy_mean"] / 100)
 assert req < 0.105, f"required capture {req:.4f}x drifted"
 print("FINDINGS:", f if f else "none")
+sys.exit(1 if f else 0)  # non zero exit so reproduce.sh and CI fail on any mismatch

@@ -11,7 +11,7 @@
 
 # Review pass 2: STUDY-001 v3 (2026-07-09, after the build)
 Method: mechanical numbers-vs-text verification of every load-bearing figure
-in the PDF against runs/*.json (adversarial_check3.py, ships with package);
+in the PDF against runs/*.json (check_numbers.py, ships with package);
 derived-claim recomputation (in-range equivalents, capture multipliers,
 uncrowded ceiling, haircut arithmetic); glyph render check at 150 dpi;
 page-map orphan check; worst-events regeneration from canonical archived

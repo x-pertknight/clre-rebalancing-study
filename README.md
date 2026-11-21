@@ -1,5 +1,7 @@
 # Uniswap v3 rebalancing: a simulation on Coinbase ETH/USD hourly candles
 
+[![reproduce](https://github.com/x-pertknight/clre-rebalancing-study/actions/workflows/reproduce.yml/badge.svg)](https://github.com/x-pertknight/clre-rebalancing-study/actions/workflows/reproduce.yml)
+
 CLRE (Concentrated Liquidity Rebalancing Engine) is the simulator in `clre.py`. It replays Coinbase ETH/USD hourly candles through exact Uniswap v3 position math. It does not use onchain pool data. The only pool data is a daily fee APY series for one pool, taken from the DeFiLlama yields API and used as a reference point.
 
 Should you auto-rebalance a tight Uniswap v3 position? Mostly no.
@@ -19,23 +21,27 @@ Read first. `final/CLRE_v3.1_Rebalancing_Study_Marco_Amendola.pdf` (4 pages).
 ## Reproduce
 
 ```
-python3 tests.py              # 9 of 9 sanity tests, required before any run
-python3 reproduce_gate.py     # replays the published numbers from archived inputs
-python3 adversarial_check3.py # checks every number in the PDF against runs/*.json (needs pdftotext)
+bash reproduce.sh
 ```
 
-The archived hourly inputs for every window are in `runs/`, so the gate runs offline with the standard library. The synthetic study uses seed 42, with parameters logged before the run. The fetch scripts, the PDF build and the figure need the packages in requirements.txt.
+It runs offline with the Python standard library and `pdftotext`, and exits non zero on any mismatch:
+
+* `tests.py`: the 9 sanity tests.
+* `reproduce_gate.py`: replays the published break even numbers from the archived inputs in `runs/` (111.6%, 125.5% and 108.0% for the ±5% threshold policy on windows A, B and B').
+* `check_numbers.py`: checks every load bearing number in the PDF against `runs/*.json`.
+
+The same script runs in GitHub Actions on every push and pull request. Rerunning `run2.py` or `scan_windows.py` fetches Coinbase candles over the network; that is not part of `reproduce.sh` or CI. The synthetic study uses seed 42, with parameters logged before the run. The fetch scripts, the PDF build and the figure need the packages in requirements.txt.
 
 ## Structure
 
 - `clre.py`. Engine: exact v3 position math, policies, costs, evaluation.
 - `tests.py`. Nine-test validation suite.
-- `reproduce_gate.py`, `adversarial_check3.py`. Gates.
+- `reproduce.sh`, `reproduce_gate.py`, `check_numbers.py`. Gates.
 - `run2.py`, `scan_windows.py`, `build_pdf3.py`. Runs and PDF build. A rerun of `run2.py` writes to `out/` and never overwrites the reference runs. Superseded scripts and earlier PDF versions are in `archive/`.
 - `make_figure.py`. README figure.
 - `runs/`. Archived inputs and full outputs (run002, run003, run004, run004b, gate, scan, fee anchor).
 - `research_log.md`. Pre-registered predictions including the failed ones, two v2 errata, belief updates.
-- `adversarial.md`. Both review passes, findings triaged, repairs.
+- `review.md`. Both review passes, findings triaged, repairs.
 - `brief.md`. Research question and acceptance criteria.
 
 ## Method
@@ -44,7 +50,7 @@ Predictions were registered before every run. Run 002 failed 2 of 4, and the fai
 
 ## What this means in practice
 
-The break-even numbers are a bar. A pool clears it only if its sustained fee APR exceeds the break-even for your width and regime, and pools paying 100% or more over time are rare and usually paying you for a risk. Before turning on any auto-rebalancing policy:
+The break-even numbers are a bar. A pool clears it only if its sustained fee APR exceeds the break-even for your width and regime. For scale, the one pool measured here, Uniswap v3 ETH/USDC 0.05%, had a mean daily fee APY of 14.9% from 9 April to 8 July 2026 (95th percentile day 36.3%) and 17.5% from 6 August to 3 November 2024 (95th percentile day 30.0%), per the DeFiLlama yields API series in `runs/fee_apr_measured.json`. Before turning on any auto-rebalancing policy:
 
 1. Measure the pool's realised fee APR over a window at least as long as your expected holding period (the series used here is in `runs/fee_apr_measured.json`).
 2. Compare it to the break-even for your width from this study.

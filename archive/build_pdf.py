@@ -189,8 +189,7 @@ E.append(Spacer(1, 8))
 E.append(HRFlowable(width="100%", thickness=0.5, color=LINE, spaceBefore=4, spaceAfter=6))
 E.append(Paragraph(
     "Engine, nine-test validation suite, run script, full run report and research log (with pre-registered "
-    "predictions) are available as a code package on request. Prior published work: UMA oracle base-rate "
-    "study (1.17M+ assertions) and related on-chain research under the handle Xpertknight (Dune).", S["small"]))
+    "predictions) are available as a code package on request.", S["small"]))
 E.append(Paragraph(
     "This document is research and decision support. It is not investment advice and contains no live "
     "trading recommendation.", S["small"]))

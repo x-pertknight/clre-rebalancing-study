@@ -7,7 +7,7 @@ from reportlab.lib.enums import TA_LEFT
 from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer, Table,
                                 TableStyle, PageBreak, HRFlowable)
 
-OUT = "/mnt/user-data/outputs/clre/CLRE_v3_Rebalancing_Study_v2_Marco_Amendola.pdf"
+OUT = "archive/CLRE_v3_Rebalancing_Study_v2_Marco_Amendola.pdf"
 INK=colors.HexColor("#1a1a1a"); ACC=colors.HexColor("#0e3a5a")
 GRY=colors.HexColor("#5a5a5a"); LIN=colors.HexColor("#c9c9c9"); BG=colors.HexColor("#eef2f5")
 ss=getSampleStyleSheet()
@@ -104,7 +104,7 @@ E.append(tbl([
 ],[80*mm,80*mm]))
 E.append(Spacer(1,7))
 E.append(HRFlowable(width="100%",thickness=0.5,color=LIN,spaceBefore=3,spaceAfter=5))
-E.append(Paragraph("Engine, nine-test validation suite, both run scripts, full reports and the research log \u2014 including the pre-registered predictions that failed and the belief updates they forced \u2014 are available as a code package on request. Prior published work: UMA oracle base-rate study (1.17M+ assertions) and related on-chain research under the handle Xpertknight (Dune).", S["sm"]))
+E.append(Paragraph("Engine, nine-test validation suite, both run scripts, full reports and the research log \u2014 including the pre-registered predictions that failed and the belief updates they forced \u2014 are available as a code package on request.", S["sm"]))
 E.append(Paragraph("Research and decision support; not investment advice; no live trading recommendation.", S["sm"]))
 doc.build(E,onFirstPage=footer,onLaterPages=footer)
 print("built",OUT)
