@@ -226,6 +226,8 @@ ceiling for ±5% is 41.5×, but it assumes all competing liquidity is
 full-range; realized multipliers on majors compress toward ~1×). Static ±5%
 on B′ ⇒ in-range-equivalent 1.8% APR ≈ 0.10× pool average.
 
+**2026-11-22.** The Dune query 7923963 above was never executed and was dropped. The fee reference in this study is the DeFiLlama series in runs/fee_apr_measured.json.
+
 **Updated belief (v3, supersedes Run 002 conclusion in evidential strength,
 not in content).** Unchanged in direction, upgraded in support: (1)
 exit-triggered re-centering at widths inside the oscillation amplitude is
