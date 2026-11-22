@@ -28,7 +28,7 @@ It runs offline with the Python standard library and `pdftotext`, and exits non 
 
 * `tests.py`: the 9 sanity tests.
 * `reproduce_gate.py`: replays the published break even numbers from the archived inputs in `runs/` (111.6%, 125.5% and 108.0% for the ±5% threshold policy on windows A, B and B').
-* `check_numbers.py`: checks every load bearing number in the PDF against `runs/*.json`.
+* `check_numbers.py`: checks every load bearing number in the PDF against `runs/*.json`, and recomputes the fee summary in `runs/fee_apr_measured.json` from the daily values in `runs/fee_apy_daily.csv`.
 
 The same script runs in GitHub Actions on every push and pull request. Rerunning `run2.py` or `scan_windows.py` fetches Coinbase candles over the network; that is not part of `reproduce.sh` or CI. The synthetic study uses seed 42, with parameters logged before the run. The fetch scripts, the PDF build and the figure need the packages in requirements.txt.
 
@@ -46,13 +46,13 @@ The same script runs in GitHub Actions on every push and pull request. Rerunning
 
 ## Method
 
-Predictions were registered before every run. Run 002 failed 2 of 4, and the failures produced the main finding. Run 003 hit 5 of 5 and run 004 hit 4 of 4. The reproduction gate runs before any new run. Fee income is inverted into a break-even APR, not assumed. The pool level reference is the DeFiLlama daily fee APY series for the Uniswap v3 ETH/USDC 0.05% pool, saved in `runs/fee_apr_measured.json`. Known limitations, and how each gap would be closed in production, are stated in the PDF.
+Predictions were registered before every run. Run 002 failed 2 of 4, and the failures produced the main finding. Run 003 hit 5 of 5 and run 004 hit 4 of 4. The reproduction gate runs before any new run. Fee income is inverted into a break-even APR, not assumed. The pool level reference is the DeFiLlama daily fee APY series for the Uniswap v3 ETH/USDC 0.05% pool. The daily series is in `runs/fee_apy_daily.csv` and its summary in `runs/fee_apr_measured.json`. Known limitations, and how each gap would be closed in production, are stated in the PDF.
 
 ## What this means in practice
 
-The break-even numbers are a bar. A pool clears it only if its sustained fee APR exceeds the break-even for your width and regime. For scale, the one pool measured here, Uniswap v3 ETH/USDC 0.05%, had a mean daily fee APY of 14.9% from 9 April to 8 July 2026 (95th percentile day 36.3%) and 17.5% from 6 August to 3 November 2024 (95th percentile day 30.0%), per the DeFiLlama yields API series in `runs/fee_apr_measured.json`. Before turning on any auto-rebalancing policy:
+The break-even numbers are a bar. A pool clears it only if its sustained fee APR exceeds the break-even for your width and regime. For scale, the one pool measured here, Uniswap v3 ETH/USDC 0.05%, had a mean daily fee APY of 14.9% from 9 April to 7 July 2026 (90 days, 95th percentile day 36.3%) and 17.5% from 6 August to 2 November 2024 (89 days, 95th percentile day 30.0%). DeFiLlama labels this yield APY (apyBase, fees only), while the break even figures in this study are APRs. The daily series is in `runs/fee_apy_daily.csv` and its summary in `runs/fee_apr_measured.json`. Before turning on any auto-rebalancing policy:
 
-1. Measure the pool's realised fee APR over a window at least as long as your expected holding period (the series used here is in `runs/fee_apr_measured.json`).
+1. Measure the pool's realised fee APR over a window at least as long as your expected holding period (the daily series used here is in `runs/fee_apy_daily.csv`).
 2. Compare it to the break-even for your width from this study.
 3. If it does not clear, a static range, re-chosen only when the regime changes, beat every re-centering policy tested here.
 

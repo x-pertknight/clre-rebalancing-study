@@ -7,7 +7,7 @@ from reportlab.lib.enums import TA_LEFT
 from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer, Table,
                                 TableStyle, PageBreak, HRFlowable)
 
-OUT = "/mnt/user-data/outputs/clre/CLRE_v3_Rebalancing_Study_Marco_Amendola.pdf"
+OUT = "archive/CLRE_v3_Rebalancing_Study_Marco_Amendola.pdf"
 
 INK = colors.HexColor("#1a1a1a")
 ACCENT = colors.HexColor("#0e3a5a")

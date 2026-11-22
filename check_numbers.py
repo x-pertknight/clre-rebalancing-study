@@ -28,6 +28,23 @@ d = json.load(open("runs/data_A_hourly_20260409_20260708.json"))
 ev = sorted(simulate_lp(d["close"], 100_000.0, 0.05, Costs(), "threshold").events, key=lambda e: -e.cost)[:5]
 for e in ev:
     if str(e.t) not in txt or f"${e.cost:.2f}" not in txt: f.append(f"worst event t={e.t} mismatch")
+# Fee anchor: recompute the stored summaries from the shipped daily series.
+# Same order and formulas as when the summary was made, so values must match exactly.
+daily = {}
+for line in open("runs/fee_apy_daily.csv"):
+    if line.startswith("#") or line.startswith("window,"):
+        continue
+    lab, _day, apy, tvl = line.strip().split(",")
+    daily.setdefault(lab, []).append((float(apy), float(tvl)))
+for lab, w in (("A", wA), ("Bprime", wB)):
+    v = [a for a, _ in daily.get(lab, [])]
+    if not v:
+        f.append(f"fee daily {lab}: no rows"); continue
+    calc = {"n": len(v), "fee_apy_mean": sum(v) / len(v), "fee_apy_median": st.median(v),
+            "fee_apy_p95": sorted(v)[int(0.95 * (len(v) - 1))],
+            "avg_tvl_usd": sum(t for _, t in daily[lab]) / len(v)}
+    for k, c in calc.items():
+        if c != w[k]: f.append(f"fee daily {lab} {k}: csv gives {c}, summary has {w[k]}")
 eqB5 = [r for r in r3["rows"] if r["name"] == "Static ±5%"][0]
 req = (eqB5["be"] / eqB5["tir"]) / (wB["fee_apy_mean"] / 100)
 assert req < 0.105, f"required capture {req:.4f}x drifted"
