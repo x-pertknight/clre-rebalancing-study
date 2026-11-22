@@ -1,5 +1,7 @@
 # Research Log — CLRE
 
+Note added 22 November 2026: the headings below say predictions were written or preregistered before each run. No hash was recorded, and the predictions entered git with the results (commit d641bf5, 9 July 2026), so that order cannot be proven from the repository.
+
 ## Run 001 — ETH/USD hourly, ~90 days, policy comparison
 
 **Hypothesis.** Rebalancing policy choice on a v3 position is dominated by path
@@ -248,7 +250,7 @@ full reproduction of Run 003 passed 6/6) flagged the headline mechanism label
 Run 004's own GBM control: OU 116.5% vs GBM 115.9% median BE, identical
 damage with zero mean reversion present. Run 004's pre-registration (S1–S4)
 never contained the discriminating prediction, so the test as designed could
-not falsify the label. The reviewer's log HAD pre-registered it (its P5:
+not falsify the label. The independent review's log HAD pre-registered it (its P5:
 threshold worse on OU than GBM; retraction rule attached) and it MISSED on
 independent synthetics.
 
@@ -268,7 +270,7 @@ centred, always 50/50), so it pays the concentrated-liquidity analogue of
 LVR continuously at a rate set by realized variance at trigger scale — a
 discrete LVR maximiser (Milionis et al. 2022), invariant to path structure.
 This unifies all evidence: A (σ55%) 111.6% ≈ B′ (σ56%) 108.0% despite
-opposite regimes; the reviewer's independent higher-σ oscillatory window
+opposite regimes; the independent review's higher-σ oscillatory window
 (2025-07-27→10-24, σ63%) at 175% matches the σ63 synthetic median (159.5%)
 within path noise. The regime-dependent object remains the static tight
 range. Findings direction unchanged; mechanism label corrected; evidential

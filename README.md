@@ -30,7 +30,7 @@ It runs offline with the Python standard library and `pdftotext`, and exits non 
 * `reproduce_gate.py`: replays the published break even numbers from the archived inputs in `runs/` (111.6%, 125.5% and 108.0% for the ±5% threshold policy on windows A, B and B').
 * `check_numbers.py`: checks every load bearing number in the PDF against `runs/*.json`, and recomputes the fee summary in `runs/fee_apr_measured.json` from the daily values in `runs/fee_apy_daily.csv`.
 
-The same script runs in GitHub Actions on every push and pull request. Rerunning `run2.py` or `scan_windows.py` fetches Coinbase candles over the network; that is not part of `reproduce.sh` or CI. The synthetic study uses seed 42, with parameters logged before the run. The fetch scripts, the PDF build and the figure need the packages in requirements.txt.
+The same script runs in GitHub Actions on every push and pull request. Rerunning `run2.py` or `scan_windows.py` fetches Coinbase candles over the network; that is not part of `reproduce.sh` or CI. The synthetic study uses seed 42, with its parameters stated in the research log. The fetch scripts, the PDF build and the figure need the packages in requirements.txt.
 
 ## Structure
 
@@ -40,13 +40,13 @@ The same script runs in GitHub Actions on every push and pull request. Rerunning
 - `run2.py`, `scan_windows.py`, `build_pdf3.py`. Runs and PDF build. A rerun of `run2.py` writes to `out/` and never overwrites the reference runs. Superseded scripts and earlier PDF versions are in `archive/`.
 - `make_figure.py`. README figure.
 - `runs/`. Archived inputs and full outputs (run002, run003, run004, run004b, gate, scan, fee anchor).
-- `research_log.md`. Pre-registered predictions including the failed ones, two v2 errata, belief updates.
+- `research_log.md`. Predictions and their scores, including the failed ones, two v2 errata, belief updates.
 - `review.md`. Both review passes, findings triaged, repairs.
 - `brief.md`. Research question and acceptance criteria.
 
 ## Method
 
-Predictions were registered before every run. Run 002 failed 2 of 4, and the failures produced the main finding. Run 003 hit 5 of 5 and run 004 hit 4 of 4. The reproduction gate runs before any new run. Fee income is inverted into a break-even APR, not assumed. The pool level reference is the DeFiLlama daily fee APY series for the Uniswap v3 ETH/USDC 0.05% pool. The daily series is in `runs/fee_apy_daily.csv` and its summary in `runs/fee_apr_measured.json`. Known limitations, and how each gap would be closed in production, are stated in the PDF.
+Predictions are written down and scored, misses included. No hash was recorded and they entered git with the results. Run 002 failed 2 of 4, and the failures produced the main finding. Run 003 hit 5 of 5 and run 004 hit 4 of 4. The reproduction gate runs before any new run. Fee income is inverted into a break-even APR, not assumed. The pool level reference is the DeFiLlama daily fee APY series for the Uniswap v3 ETH/USDC 0.05% pool. The daily series is in `runs/fee_apy_daily.csv` and its summary in `runs/fee_apr_measured.json`. Known limitations, and how each gap would be closed in production, are stated in the PDF.
 
 ## What this means in practice
 
@@ -56,6 +56,6 @@ The break-even numbers are a bar. A pool clears it only if its sustained fee APR
 2. Compare it to the break-even for your width from this study.
 3. If it does not clear, a static range, re-chosen only when the regime changes, beat every re-centering policy tested here.
 
-Marco Amendola, July 2026. Not investment advice.
+Marco Amendola. Study July 2026; this README and the daily fee data were updated on 22 November 2026. Not investment advice.
 
 Code is MIT licensed. Text and data are CC BY 4.0.

@@ -103,7 +103,7 @@ E.append(Paragraph(
     "The central design choice: fee income is <b>not assumed \u2014 it is inverted</b>. The primary output is "
     "the organic fee APR each policy would have <i>required</i> to match HODL. This removes the volume "
     "assumption entirely; an assumed-APR scenario table is reported separately and labeled as an upper-bound "
-    "model. All outcome predictions were logged before the run, and all six ranked as predicted.", S["body"]))
+    "model. All six outcome predictions ranked as predicted.", S["body"]))
 
 E.append(Paragraph("Results", S["h1"]))
 E.append(tbl([
@@ -188,7 +188,7 @@ E.append(tbl([
 E.append(Spacer(1, 8))
 E.append(HRFlowable(width="100%", thickness=0.5, color=LINE, spaceBefore=4, spaceAfter=6))
 E.append(Paragraph(
-    "Engine, nine-test validation suite, run script, full run report and research log (with pre-registered "
+    "Engine, nine-test validation suite, run script, full run report and research log (with scored "
     "predictions) are available as a code package on request.", S["small"]))
 E.append(Paragraph(
     "This document is research and decision support. It is not investment advice and contains no live "

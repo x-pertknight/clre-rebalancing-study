@@ -15,7 +15,7 @@ in the PDF against runs/*.json (check_numbers.py, ships with package);
 derived-claim recomputation (in-range equivalents, capture multipliers,
 uncrowded ceiling, haircut arithmetic); glyph render check at 150 dpi;
 page-map orphan check; worst-events regeneration from canonical archived
-inputs; prediction-order audit (pre-registration precedes results in log).
+inputs; prediction-order audit (predictions precede results in the log text).
 
 | # | Finding | Severity | Repair | Status |
 |---|---|---|---|---|
