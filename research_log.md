@@ -242,15 +242,15 @@ Break-even convention now stated explicitly: APR on deposited capital over
 the full window; time-in-range dilution applies symmetrically to required
 and realized accrual; in-range equivalents reported for static ranges.
 
-## Run 004b — discriminating mechanism test (independent-review repair)
+## Run 004b — discriminating mechanism test (review repair)
 
-**Origin.** Independent review of the v3 draft (same engine,
+**Origin.** A separate review of the v3 draft (same engine,
 full reproduction of Run 003 passed 6/6) flagged the headline mechanism label
 — "structurally short mean-reversion at trigger scale" — as falsified by
 Run 004's own GBM control: OU 116.5% vs GBM 115.9% median BE, identical
 damage with zero mean reversion present. Run 004's pre-registration (S1–S4)
 never contained the discriminating prediction, so the test as designed could
-not falsify the label. The independent review's log HAD pre-registered it (its P5:
+not falsify the label. The review's log HAD pre-registered it (its P5:
 threshold worse on OU than GBM; retraction rule attached) and it MISSED on
 independent synthetics.
 
@@ -270,7 +270,7 @@ centred, always 50/50), so it pays the concentrated-liquidity analogue of
 LVR continuously at a rate set by realized variance at trigger scale — a
 discrete LVR maximiser (Milionis et al. 2022), invariant to path structure.
 This unifies all evidence: A (σ55%) 111.6% ≈ B′ (σ56%) 108.0% despite
-opposite regimes; the independent review's higher-σ oscillatory window
+opposite regimes; the review's higher-σ oscillatory window
 (2025-07-27→10-24, σ63%) at 175% matches the σ63 synthetic median (159.5%)
 within path noise. The regime-dependent object remains the static tight
 range. Findings direction unchanged; mechanism label corrected; evidential
