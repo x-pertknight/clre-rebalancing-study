@@ -56,6 +56,6 @@ The break-even numbers are a bar. A pool clears it only if its sustained fee APR
 2. Compare it to the break-even for your width from this study.
 3. If it does not clear, a static range, re-chosen only when the regime changes, beat every re-centering policy tested here.
 
-Marco Amendola. Study July 2026; this README and the daily fee data were updated on 22 November 2026. Not investment advice.
+Marco Amendola. Study July 2026; this README and the daily fee data were updated on 22 November 2026, and the README figure was redrawn from `runs/` on 25 November 2026. Not investment advice.
 
 Code is MIT licensed. Text and data are CC BY 4.0.
